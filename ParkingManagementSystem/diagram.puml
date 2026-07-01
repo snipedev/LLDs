@@ -1,0 +1,48 @@
+@startuml
+
+class ParkingLot {
+    +Id : Guid
+    +IsAvailable : bool
+    +Size : int
+    +park()
+    +unpark()
+}
+
+class ParkingFloor {
+    +Id : Guid
+    +FloorNumber : int
+    +addParkingLot()
+    +removeParkingLot()
+    +getAvailableParkingLots()
+}
+
+class ParkingManagementSystem {
+    +Id : Guid
+    +manageParking()
+    +calculateParkingFee()
+    +generateParkingReport()
+}
+
+abstract class Vehicles {
+    +Id : Guid
+    +LicensePlate : string
+    +Size : int
+}
+
+class Car {
+    +Id : Guid
+    +LicensePlate : string
+    +Size : int
+}
+
+class Motorcycle {
+    +Id : Guid
+    +LicensePlate : string
+    +Size : int
+}
+
+class Truck {
+    +Id : Guid
+    +LicensePlate : string
+    +Size : int
+}
