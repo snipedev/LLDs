@@ -1,46 +1,8 @@
 namespace ParkingManagementSystem;
-    public enum VehicleType
-    {
-        Car,
-        Motorcycle,
-        Truck
-    }
-    public abstract class Vehicle
-    {
-        public string LicensePlate { get; }
-        public VehicleType VehicleType { get; }
 
-        protected Vehicle(string licensePlate, VehicleType vehicleType)
-        {
-            LicensePlate = licensePlate;
-            VehicleType = vehicleType;
-        }
-    }
+/******************************************************************************/
 
-    public class Car : Vehicle
-    {
-        public Car(string licensePlate) : base(licensePlate, VehicleType.Car)
-        {
-        }
-    }
-
-    public class Motorcycle : Vehicle
-    {
-        public Motorcycle(string licensePlate) : base(licensePlate, VehicleType.Motorcycle)
-        {
-        }
-    }
-
-    public class Truck : Vehicle
-    {
-        public Truck(string licensePlate) : base(licensePlate, VehicleType.Truck)
-        {
-        }
-    }
-
-    /******************************************************************************/
-
-    // Parking Spot class
+// Parking Spot class
 
     /// <summary>
     /// Represents a parking spot in the parking lot.
@@ -112,6 +74,8 @@ public class ParkingLotManager
 {
     private readonly IList<ParkingLot> _parkingLots = new List<ParkingLot>();
 
+    private Dictionary<string, ParkingSpot> _vehicleSpotMap = new Dictionary<string, ParkingSpot>();
+
     public void AddParkingLot(ParkingLot lot)
     {
         _parkingLots.Add(lot);
@@ -124,23 +88,24 @@ public class ParkingLotManager
             var availableSpot = lot.FindAvailableSpot(vehicle.VehicleType);
             if (availableSpot != null && availableSpot.ParkVehicle(vehicle))
             {
+                _vehicleSpotMap[vehicle.LicensePlate] = availableSpot;
                 return availableSpot;
             }
         }
         return null; // No available spot found
     }
 
-    public bool RemoveVehicle(Vehicle vehicle)
+    public bool RemoveVehicle(string LicensePlate)
     {
-        foreach (var lot in _parkingLots)
-        {
-            var spot = lot.ParkingSpots.FirstOrDefault(s => s.ParkedVehicle.licensePlate == vehicle.licensePlate);
-            if (spot != null && spot.RemoveVehicle())
-            {
-                return true;
-            }
-        }
-        return false; // Vehicle not found in any parking lot
+        if (!_vehicleSpotMap.TryGetValue(licensePlate, out ParkingSpot spot))
+        return false;
+
+    if (!spot.RemoveVehicle())
+        return false;
+
+    _vehicleSpotMap.Remove(licensePlate);
+
+    return true;
     }
 }
 
